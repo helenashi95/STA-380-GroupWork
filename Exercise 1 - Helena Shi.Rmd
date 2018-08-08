@@ -10,14 +10,55 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::include_graphics("Dir/image.png") #INCLUDE THIS?
 ```
 
-#Part A
-![Part A](Stats/Exercise 1/PartA.png) 
-#ERRORS KNITTING
+#Probability Part A
 
-#Part B
-![Part B](Stats/Exercise 1/PartB.png)
+![Part A](Stats/Exercise 1/PartA.png) #ERRORS KNITTING
 
+Event T = person is truthfull clicker
 
+Event A = answered yes in survey
+
+Goal: find the proportion of truthfull clickers who answered yes
+
+$P(A) = P(A|T)*P(T) + P(A|T')*P(T')$
+
+$0.65 = P(A|T)*(0.7) + (0.5)*(0.3)$
+
+$P(A|T) = 0.7143$
+
+**71.43% of truthfull clickers answered yes to the survey.**
+
+<br>
+
+#Probability Part B
+
+![Part B](Stats/Exercise 1/PartB.png) 
+
+Event A = person actually has the disease
+
+Event T = person tests positive for the disease
+
+<br>
+*First find $P(T)$ using Law of Total Probability *
+
+$P(T) = P(T|A)*P(A) + P(T|A')*P(A')$
+
+$P(T) = (0.993)*(0.000025) + (0.0001)*(0.999975)$
+
+$P(T) = 0.0001248225$
+
+<br>
+*Now find $P(A|T)$ using Bayes Theorem*
+
+$P(A|T) = \frac{P(A)*P(T|A)}{P(T)}$ 
+
+$P(A|T) = \frac{(0.993)*(0.000025)}{0.0001248225}$
+
+$P(A|T) = 0.19888$
+
+**After a positive test result, there is still only a 20% chance a person has the disease. Implementing this testing universally will lead to a lot of false positives. These people will need to be retested (possibly multiple times) to confirm the disease, or go through different tests that are more conclusive.**
+
+<br>
 #Exploratory Analysis: Green Buildings
 
 ```{r}
