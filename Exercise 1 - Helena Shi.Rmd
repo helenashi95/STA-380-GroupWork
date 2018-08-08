@@ -1,0 +1,82 @@
+---
+title: "Exercise 1"
+author: "Helena Shi"
+date: "August 7, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::include_graphics("Dir/image.png") #INCLUDE THIS?
+```
+
+#Part A
+![Part A](Stats/Exercise 1/PartA.png) 
+#ERRORS KNITTING
+
+#Part B
+![Part B](Stats/Exercise 1/PartB.png)
+
+
+#Exploratory Analysis: Green Buildings
+
+```{r}
+green = read.csv('greenbuildings.csv', header = T)
+attach(green)
+
+#correlation matrix
+correlated = cor(green, method = c("pearson"))
+correlated
+```
+
+
+```{r}
+med = median(Rent)
+hist(Rent)
+abline(v = med, col = 2, lwd = 2)
+```
+
+The rent is highly skewed, with a couple of extreme outliers. 
+
+```{r}
+plot(cluster_rent, Rent)
+```
+
+
+```{r}
+plot(Electricity_Costs, Rent)
+```
+
+Rent is highly correlated with Electricity cost (0.39166) and cluster_rent(0.759). Understandably, cluster_rent is highly and closely correlated with rent. However, is electricity cost still highly correlated when a unit pays for utilities separately?
+
+##plot greens/not greens to age, rent, etc.
+
+```{r}
+#filter green so only net = 1 rows are left
+netgreen = green[net == '1',]
+plot(netgreen$Electricity_Costs, netgreen$Rent)
+```
+
+```{r}
+cor(netgreen$Electricity_Costs, netgreen$Rent)
+```
+
+Correlation between Electricity Costs and Rent dropped to 0.29545 for units where net = 1, or where residents paid for utilities themselves.
+
+```{r}
+netgreen2 = green[net != '1',]
+plot(netgreen2$Electricity_Costs, netgreen2$Rent)
+```
+
+```{r}
+cor(netgreen2$Electricity_Costs, netgreen2$Rent)
+```
+##Correlation grew to 0.4012, SOOO IDK.
+
+##Compare price of areas & price of new buildings??
+
+#Bootstrapping
+```{r}
+
+```
+
