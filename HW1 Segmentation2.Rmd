@@ -1,0 +1,90 @@
+---
+title: "HW1 Segmentation"
+author: "Abraham Khan"
+date: "August 8, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Bootstrapping
+
+```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
+library(kableExtra)
+library(ggplot2)
+library(LICORS)  # for kmeans++
+library(foreach)
+library(mosaic)
+```
+
+
+
+```{r Read Data, echo=FALSE, message=FALSE, warning=FALSE}
+sm = read.csv('C:/Users/Abraham/Desktop/UT/MSBA/Intro Predictive Modeling/social_marketing.csv', header=TRUE)
+#drop randomized ID column
+sm <- sm[-c(1)]
+
+# Center/scale the data
+sm <- na.omit(sm)
+sm_scaled = scale(sm, center=TRUE, scale=TRUE)
+```
+
+#Find K
+
+```{r Find K}
+#kmeans 
+#Try different K clusters
+sumsquares=sapply(2:30,function(k){
+  model = kmeans(sm_scaled,k, iter.max=15)
+  (model$betweenss/(k-1))/(model$totss/(36-k))  
+  })
+plot(2:30,sumsquares, type='b', pch=20)
+
+# Use k-means to get 6 clusters
+cluster_all <- kmeanspp(sm_scaled, k=6)
+```
+
+
+```{r Cluster1}
+# Plot with labels
+check1 = sm_scaled[,names(sort(cluster_all$centers[1,])[32:36])]
+pairs(check1, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+```{r Cluster2}
+# Plot with labels
+check2 = sm_scaled[,names(sort(cluster_all$centers[2,])[32:36])]
+pairs(check2, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+```{r Cluster3}
+# Plot with labels
+check3 = sm_scaled[,names(sort(cluster_all$centers[3,])[32:36])]
+pairs(check3, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+```{r Cluster4}
+# Plot with labels
+check4 = sm_scaled[,names(sort(cluster_all$centers[4,])[32:36])]
+pairs(check4, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+```{r Cluster5}
+# Plot with labels
+check5 = sm_scaled[,names(sort(cluster_all$centers[5,])[32:36])]
+pairs(check5, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+```{r Cluster6}
+# Plot with labels 
+check6 = sm_scaled[,names(sort(cluster_all$centers[6,])[32:36])]
+pairs(check6, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
