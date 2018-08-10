@@ -1,0 +1,550 @@
+---
+title: "HW1"
+author: "Alyson Brown"
+date: "8/4/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Part A
+
+
+##Part B
+
+Let A respresent the event of a positive test. Let B represent the event of having the disease.
+
+
+(Sensitivity)
+$P(A|B) = 0.993$
+
+(Specificity)
+$P('A|'B) = 0.9999$
+$P(B) = 0.000025$
+$P('B) = 1-0.000025 = 0.999975$
+$P(A|'B) = 1 - 0.9999 = 1e-04$
+
+####Bayes Rule:
+$P(A|B) = P(B|A)*P(A) / P(B)$
+
+####Substitution: 
+$0.993 = P(B|A)*P(A) / 0.000025$
+
+
+#####Find 
+$P(A) = P(A,B)+P(A,'B)$
+$= P(A|B)*P(B) + P(A|'B)P('B)$
+$=0.993*0.000025 + 1e-04*0.999975$
+
+
+
+## Green Building
+
+```{r pressure1, echo=FALSE, message= FALSE}
+
+require(reshape2)
+library(reshape2)
+require(reshape)
+library(reshape)
+library(ggplot2)
+
+data <- read.csv("/Users/alysonbrown/Desktop/STA380-master/data/greenbuildings.csv")
+#cor(data)
+
+```
+
+In my opinion, this analysis is critically shortsighted.  The on-staff stats guru blindly compares green buildings to non-green buildings, considering no other factors that might affect rent.. He effectively attributes 100% of the $2.60 average increase in rent to whether or not a building being green. 
+
+Upon further investigation, I believe that this decision requires more analysis. It is difficult to recommend that the building be built green or not based on the limited information available.  
+
+My initial analysis included a multiple linear regression to assess the relative importance of all predictor variables. The output is as shown below: 
+
+```{r, echo= FALSE}
+
+#Quick Regression to look at correlation coefficients & potential interactions
+fit <- lm(Rent ~ ., data = data)
+#summary(fit)
+
+```
+
+It appears that whether or not a building is green is insignificant when determining the rent. The P-value is 0.327867, suggesting that green rating is not significant holding all other factors constant. Important features include cluster, leasing rate, age, class a, and others.  
+
+I further investigated the predictor variables for a potential confounding effect. (For example, can we attribute an increase in rent to the fact that a building is green or to that fact that it is new, condiering that most green buildings are new? It is difficult to isolate the effect of a green building.) 
+
+Starting with the age of a building, we can see that in the entire dataset, the average age of a building is roughly 46 years old, and the average age of green buildings is roughly 23 years old. 
+
+```{r , echo= FALSE}
+
+data_green <- data[data['green_rating']==1, ]
+data_age <- data[data['age']<23, ]
+
+myMatrix <- matrix(0, nrow = 1, ncol = 2)
+myMatrix[1,1] = mean(data_green$age)
+myMatrix[1,2] = mean(data$age)
+colnames(myMatrix) = c('Green Buildings', 'All Buildings')
+rownames(myMatrix) = c('Mean Age')
+cols <- c("blue", "red")
+barplot(myMatrix,ylab = 'Years', main = 'Mean Age', beside = TRUE, col = cols)
+
+```
+
+If we compare the mean rent of all(green or not) “old” buildings (over 23 years) and new buildings (under 23 years) we can see that the stats guru’s assertion of a ~\$2 increase in rent per square foot remains true. We therefore cannot know if the \$2 increase is due to the fact that a building is new or green, as these factors are systematically correlated.
+
+```{r , echo= FALSE}
+
+cat('Mean rent for buildings < 23 years: ', mean(data_age$Rent))
+cat('Mean rent for buildings > 23 years: ', mean(data$Rent))
+cat('Premium per sq. ft.: ', mean(data_age$Rent)-mean(data$Rent))
+```
+
+This means that we can't necessarily differentiate the effect of green buildings and the effect of new buildings. The stats guru concluded that green buildings see a premium of $2.6 by being a green building, but you essentially get this premium just by being a new building.
+
+Note: I chose 'new' buildings to be those under 23 years, which is the average age of green buildings. I split the data here so that the effect of green buildings on rent(if any), would be the same on either side of the age split.
+
+
+
+
+
+
+The second variable I investigated for a confounding affect was class A. Class A buildings are typically the most desired as they are the highest quality. You can see a similar confounding affect.
+
+
+```{r , echo= FALSE}
+
+tab <- table(data_green$class_a)
+prop <- tab[2]/(tab[1]+tab[2])
+tab <- table(data$class_a)
+prop1 <- tab[2]/(tab[1]+tab[2])
+
+data_classA <- data[data['class_a']==1, ]
+data_not_classA <- data[data['class_a']!=1, ]
+
+
+```
+
+
+
+```{r , echo= FALSE}
+
+
+myMatrix <- matrix(0, nrow = 1, ncol = 2)
+myMatrix[1,1] = prop
+myMatrix[1,2] = prop1
+colnames(myMatrix) = c('Green Buildings', 'All Buildings')
+rownames(myMatrix) = c('Proportion of Class A')
+#cols <- c("blue", "red")[(mean(data$age) > mean(data_green$age))+1] 
+cols <- c("blue", "red")
+barplot(myMatrix,ylab = 'Percent', main = 'Proportion of Class A',beside = TRUE, col = cols)
+
+
+```
+
+Roughly 80% of green buildings are of the type class A, whereas only 40% of the overall population are class A buildings. This means that again, we cannot assume that an increase in rent is directly caused by a building being green instead of a building being of class A. In fact, I would guess that being green does not affect the rent nearly as much as other factors (if at all) based on the output of the initial regression analysis coefficients. (Recall that green_rating had a Pvalue of 0.327867)
+
+```{r , echo= FALSE}
+
+cat('Mean Class A rent: ', mean(data_classA$Rent))
+cat('Mean Not-Class A rent: ', mean(data$Rent))
+cat('Premium per sq. ft.: ', mean(data_classA$Rent)-mean(data$Rent))
+
+
+```
+
+
+```{r , echo= FALSE}
+
+
+data_1 <- data[which (data['class_a']==1 | data['green_rating']==1),]
+data_2<- data[which (data['class_a']==1 | data['green_rating']!=1),]
+data_3 <- data[which (data['class_a']!=1 | data['green_rating']==1),]
+data_4<- data[which (data['class_a']!=1 | data['green_rating']!=1),]
+
+#double graph
+
+myMatrix <- matrix(0, nrow = 2, ncol = 2)
+myMatrix[1,1] = mean(data_1$Rent)
+myMatrix[1,2] = mean(data_2$Rent)
+myMatrix[2,1] = mean(data_3$Rent)
+myMatrix[2,2] = mean(data_4$Rent)
+colnames(myMatrix) = c('Green', 'Not-Green')
+rownames(myMatrix) = c('Class A', 'Not-Class A')
+
+barplot(myMatrix,ylab = 'Avg Rent / Sqft', main = 'Green and Class A',beside = TRUE, col = cols, legend.text = rownames(myMatrix))
+
+
+
+```
+
+
+
+My recommendation is to first consider other factors such as age, class a, amenities, cluster, etc. and then determine if tenants in these specific building types are willing to pay a premium for a green building, and if so, how much of a premium. 
+
+Thanks, 
+
+Alyson
+
+
+
+
+
+
+
+## Bootsrapping Problem
+
+Download several years of daily data on these ETFs
+
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+rm(list = ls())
+library(mosaic)
+library(quantmod)
+library(foreach)
+
+mystocks = c("SPY", "LQD", "TLT", "EEM", "VNQ")
+myprices = getSymbols(mystocks, from = "2007-01-01")
+myMatrix1 = matrix(0, nrow = 3, ncol = 2)
+
+```
+
+Now explore the data and come to an understanding of the risk/return properties of these assets.
+
+```{r, echo= FALSE}
+
+for(ticker in mystocks) {
+  expr = paste0(ticker, "a = adjustOHLC(", ticker, ")")
+  eval(parse(text=expr))
+}
+
+# Combine all the returns in a matrix
+all_returns = cbind(ClCl(SPYa), ClCl(LQDa),ClCl(TLTa),ClCl(EEMa),ClCl(VNQa))
+all_returns = as.matrix(na.omit(all_returns))
+apply(all_returns, 2, sd)
+
+```
+
+Evenly Split Portfolio (20%)
+
+```{r, echo= FALSE}
+
+# Now simulate many different possible scenarios  
+initial_wealth = 100000
+simE = foreach(i=1:2000, .combine='rbind') %do% {
+  total_wealth = initial_wealth
+  weights = c(0.2, 0.2, 0.2, 0.2, 0.2)
+  holdings = weights * total_wealth
+  n_days = 20
+  wealthtracker = rep(0, n_days)
+  for(today in 1:n_days) {
+    return.today = resample(all_returns, 1, orig.ids=FALSE)
+    holdings = holdings + holdings*return.today
+    total_wealth = sum(holdings)
+    wealthtracker[today] = total_wealth
+  }
+  wealthtracker
+}
+
+# Profit/loss
+mean(simE[,n_days])
+hist(simE[,n_days]- initial_wealth, breaks=30, xlab = 'Expected Gains', main = 'Evenly Weighted Portfolio', col = 'purple') 
+# Calculate 5% value at risk
+initial_wealth - quantile(simE[,n_days], 0.05)
+
+#fill this for comparison at the end
+myMatrix1[1,1] = mean(simE[,n_days])
+myMatrix1[1,2] = initial_wealth - quantile(simE[,n_days], 0.05)
+
+```
+
+Safer Portfolio
+
+
+```{r, echo= FALSE}
+
+# Now simulate many different possible scenarios  
+initial_wealth = 100000
+simS = foreach(i=1:2000, .combine='rbind') %do% {
+  total_wealth = initial_wealth
+  weights = c(0.1, 0.6, 0.3, 0.0, 0.0)
+  holdings = weights * total_wealth
+  n_days = 20
+  wealthtracker = rep(0, n_days)
+  for(today in 1:n_days) {
+    return.today = resample(all_returns, 1, orig.ids=FALSE)
+    holdings = holdings + holdings*return.today
+    total_wealth = sum(holdings)
+    wealthtracker[today] = total_wealth
+  }
+  wealthtracker
+}
+
+
+# Profit/loss
+mean(simS[,n_days])
+hist(simS[,n_days]- initial_wealth, breaks=30, xlab = 'Expected Gains', main = 'Safer Portfolio', col = 'purple')  
+# Calculate 5% value at risk
+initial_wealth - quantile(simS[,n_days], 0.05)
+
+#fill this for comparison at the end
+myMatrix1[2,1] = mean(simS[,n_days])
+myMatrix1[2,2] = initial_wealth - quantile(simS[,n_days], 0.05)
+
+
+```
+
+More Aggressive Portfolio
+
+
+```{r, echo= FALSE}
+
+initial_wealth = 100000
+simA = foreach(i=1:2000, .combine='rbind') %do% {
+  total_wealth = initial_wealth
+  weights = c(0.2, 0.1, 0.1, 0.3, 0.3)
+  holdings = weights * total_wealth
+  n_days = 20
+  wealthtracker = rep(0, n_days)
+  for(today in 1:n_days) {
+    return.today = resample(all_returns, 1, orig.ids=FALSE)
+    holdings = holdings + holdings*return.today
+    total_wealth = sum(holdings)
+    wealthtracker[today] = total_wealth
+  }
+  wealthtracker
+}
+
+
+# Profit/loss
+mean(simA[,n_days])
+hist(simA[,n_days]- initial_wealth, breaks=30, xlab = 'Expected Gains', main = 'More Aggressive Portfolio', col = 'purple', xlim = c(-7000, 50000))  
+# Calculate 5% value at risk
+initial_wealth - quantile(simA[,n_days], 0.05)
+
+#fill this for comparison at the end
+myMatrix1[3,1] = mean(simA[,n_days])
+myMatrix1[3,2] = initial_wealth - quantile(simA[,n_days], 0.05)
+
+
+```
+
+Compare
+
+```{r, echo= FALSE}
+colnames(myMatrix1) = c('Expected Portfolio Value', 'Expected Loss w/ 5% Probability')
+rownames(myMatrix1) = c('Even Portfolio', 'Safe Portfolio', 'Risky Portfolio')
+myMatrix1
+
+```
+
+Report:
+
+
+
+
+
+
+
+
+
+```{r, echo= FALSE}
+
+plot(density(simS[,n_days]), xlim = c(70000, 140000),main = 'Portfolio Comparison', xlab = 'Portfolio Value', ylab = 'Frequency', col = 'green', lwd = 3)
+lines(density(simE[,n_days]), col = 'black', lwd = 3)
+lines(density(simA[,n_days]), col = 'red', lwd = 3)
+legend('right', legend = c('Safe Portfolio', 'Equal Portfolio', 'Aggressive Portfolio'), fill = c('green', 'black', 'red'))
+```
+
+
+
+
+## Market Segmentation
+
+
+```{r, echo= FALSE, warning = FALSE, message = FALSE}
+library(ggplot2)
+library(LICORS)  # for kmeans++
+library(foreach)
+library(mosaic)
+
+sm = read.csv('/Users/alysonbrown/Desktop/social_marketing.csv', header=TRUE)
+
+X = sm[,-1]
+sm_scaled = scale(X, center=TRUE, scale=TRUE)
+
+
+#loops through k = 2-10, creating a kmeans model with 15 dif starts, 
+# Outputs the Error term     ??CH Index (calculated)
+sumsquares = sapply(2:10, function(k){
+  model = kmeans(sm_scaled, k, iter.max = 15)
+  (model$betweenss/(k-1))/(model$totss/(36-k))
+})
+
+plot(2:10, sumsquares, type = 'b')
+
+
+```
+
+Using this plot, we chose to continue with k = 6 clusters. It seems to be somewhat of an elbow and minimizes the sum of squares while maintaining meaningful clusters.
+
+
+```{r, echo= FALSE}
+clust2 = kmeanspp(sm_scaled, k=6, nstart=25)
+set.seed(100)
+```
+
+For each cluster we sorted the centers, taking the top and bottom 5 important features in order to gain insight into cluster behavior.
+
+Based on the results above, we we able to break down the dataset into market segements:
+
+Cluster 1: (Top & Bottom 5)
+
+Granola People/Whole Foods Shopper
+
+
+```{r, echo= FALSE}
+sort(clust2$centers[1,])[32:36]   #Health people
+sort(clust2$centers[1,])[1:5] 
+temp <- sm[, names(sort(clust2$centers[1,])[32:36])]
+pairs(temp, col = rainbow(6)[clust2$cluster], pch = 20)
+
+```
+
+Cluster 2: (Top & Bottom 5)
+Spam/Bots Cluster
+
+```{r, echo= FALSE}
+
+sort(clust2$centers[2,])[32:36] #avoid this cluster, top 3 are adult, spam & chatter
+sort(clust2$centers[2,])[1:5] 
+temp <- sm[c('adult', 'spam', 'chatter', 'tv_film', 'shopping')]
+pairs(temp, col = rainbow(6)[clust2$cluster], pch = 20)
+
+
+```
+
+Cluster 3: (Top & Bottom 5)
+The Soccer Moms/Family People
+
+```{r, echo= FALSE}
+
+sort(clust2$centers[3,])[32:36]  #Household people
+sort(clust2$centers[3,])[1:5] 
+temp3 <- sm[, names(sort(clust2$centers[3,])[32:36])]
+pairs(temp3, col = rainbow(6)[clust2$cluster], pch = 20)
+
+```
+
+Cluster 4: (Top & Bottom 5)
+
+```{r, echo= FALSE}
+
+sort(clust2$centers[4,])[32:36]   #college student cluster
+sort(clust2$centers[4,])[1:5] 
+temp4 <- sm[, names(sort(clust2$centers[4,])[32:36])]
+pairs(temp4, col = rainbow(6)[clust2$cluster], pch = 20)
+
+```
+
+Cluster 5: (Top & Bottom 5)
+
+```{r, echo= FALSE}
+
+sort(clust2$centers[5,])[32:36]  #Working person, someone who reads the news, newspaper
+sort(clust2$centers[5,])[1:5] 
+temp5 <- sm[, names(sort(clust2$centers[5,])[32:36])]
+pairs(temp5, col = rainbow(6)[clust2$cluster], pch = 20)
+
+
+```
+
+Cluster 6: (Top & Bottom 5)
+
+
+```{r, echo= FALSE}
+
+sort(clust2$centers[6,])[32:36] #Pinterest people, middle class young women, social media ppl, bloggers
+sort(clust2$centers[6,])[1:5] 
+temp6 <- sm[, names(sort(clust2$centers[6,])[32:36])]
+pairs(temp6, col = rainbow(6)[clust2$cluster], pch = 20)
+
+
+```
+
+
+
+## PCA
+
+We also tried PCA as another way to break down the list of users into market segments.
+We used 15 principle components in order to account for 73% of the variance while not overfitting and maintaining as simple of a model as possible.? 
+
+
+```{r, echo= FALSE}
+pc1 = prcomp(sm_scaled, rank=15)
+summary(pc1)
+pc1_scores = predict(pc1)  # same as fxpca$x
+#plot(pc1)
+```
+
+We next plotted all data points against the first 2 principle components. 
+
+```{r, echo= FALSE}
+
+# Question 1: where do the original observations end up in PC space?
+plot(pc1_scores[,1:2], pch=21, bg=terrain.colors(119)[119:1], main="Currency PC scores")
+legend("bottomleft", fill=terrain.colors(3),
+       legend=c("2010","2005","2001"), cex=0.75)
+
+```
+
+Unfortunately, there is not much of a takeaway from this graph, so the team moved on to try to understand how the clusters relate to the original variables.
+
+```{r, echo= FALSE}
+
+# Question 2: how are the loadings related to the original variables?
+barplot(pc1$rotation[,1], las=2)
+
+```
+
+
+In this plot, the top 5 most significant variables are religion, parenting, school, food, and sports_fandom, which remains consistent with our 'Family People' cluster from the kmeans algorithm. 
+
+For the sake of space, we decided only to include this one plot, but the next few principle components remained consistent with our clusters from the kmeans algorithm.  As you begin to use other principle components you start to see other smaller clusters form, which could be an interesting way to find more niche market segments. For example, principle component 10's tweets seem to encompass things like home and garden, school, and dating, which leads me to believe that it is a group of high-school aged students living at home.
+
+
+```{r, echo= FALSE}
+
+barplot(pc1$rotation[,10], las=2)
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
