@@ -1,0 +1,510 @@
+---
+title: "Exercise 1"
+author: "Helena Shi"
+date: "August 7, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::include_graphics("Dir/image.png") #INCLUDE THIS?
+```
+
+#Probability Part A
+
+![Part A](Stats/Exercise 1/PartA.png) #ERRORS KNITTING
+
+Event T = person is truthfull clicker
+
+Event A = answered yes in survey
+
+Goal: find the proportion of truthfull clickers who answered yes
+
+$P(A) = P(A|T)*P(T) + P(A|T')*P(T')$
+
+$0.65 = P(A|T)*(0.7) + (0.5)*(0.3)$
+
+$P(A|T) = 0.7143$
+
+**71.43% of truthfull clickers answered yes to the survey.**
+
+<br>
+
+#Probability Part B
+
+![Part B](Stats/Exercise 1/PartB.png) 
+
+Event A = person actually has the disease
+
+Event T = person tests positive for the disease
+
+<br>
+*First find $P(T)$ using Law of Total Probability *
+
+$P(T) = P(T|A)*P(A) + P(T|A')*P(A')$
+
+$P(T) = (0.993)*(0.000025) + (0.0001)*(0.999975)$
+
+$P(T) = 0.0001248225$
+
+<br>
+*Now find $P(A|T)$ using Bayes Theorem*
+
+$P(A|T) = \frac{P(A)*P(T|A)}{P(T)}$ 
+
+$P(A|T) = \frac{(0.993)*(0.000025)}{0.0001248225}$
+
+$P(A|T) = 0.19888$
+
+**After a positive test result, there is still only a 20% chance a person has the disease. Implementing this testing universally will lead to a lot of false positives. These people will need to be retested (possibly multiple times) to confirm the disease, or go through different tests that are more conclusive.**
+
+<br>
+#Exploratory Analysis: Green Buildings
+
+
+```{r pressure1, echo=FALSE, message= FALSE}
+
+require(reshape2)
+library(reshape2)
+require(reshape)
+library(reshape)
+library(ggplot2)
+
+data <- read.csv("/Users/alysonbrown/Desktop/STA380-master/data/greenbuildings.csv")
+#cor(data)
+
+```
+
+In my opinion, this analysis is critically shortsighted.  The on-staff stats guru blindly compares green buildings to non-green buildings, considering no other factors that might affect rent.. He effectively attributes 100% of the $2.60 average increase in rent to whether or not a building being green. 
+
+Upon further investigation, I believe that this decision requires more analysis. It is difficult to recommend that the building be built green or not based on the limited information available.  
+
+My initial analysis included a multiple linear regression to assess the relative importance of all predictor variables. The output is as shown below: 
+
+```{r, echo= FALSE}
+
+#Quick Regression to look at correlation coefficients & potential interactions
+fit <- lm(Rent ~ ., data = data)
+#summary(fit)
+
+```
+
+It appears that whether or not a building is green is insignificant when determining the rent. The P-value is 0.327867, suggesting that green rating is not significant holding all other factors constant. Important features include cluster, leasing rate, age, class a, and others.  
+
+I further investigated the predictor variables for a potential confounding effect. (For example, can we attribute an increase in rent to the fact that a building is green or to that fact that it is new, condiering that most green buildings are new? It is difficult to isolate the effect of a green building.) 
+
+Starting with the age of a building, we can see that in the entire dataset, the average age of a building is roughly 46 years old, and the average age of green buildings is roughly 23 years old. 
+
+```{r , echo= FALSE}
+
+data_green <- data[data['green_rating']==1, ]
+data_age <- data[data['age']<23, ]
+
+myMatrix <- matrix(0, nrow = 1, ncol = 2)
+myMatrix[1,1] = mean(data_green$age)
+myMatrix[1,2] = mean(data$age)
+colnames(myMatrix) = c('Green Buildings', 'All Buildings')
+rownames(myMatrix) = c('Mean Age')
+cols <- c("blue", "red")
+barplot(myMatrix,ylab = 'Years', main = 'Mean Age', beside = TRUE, col = cols)
+
+```
+
+If we compare the mean rent of all(green or not) “old” buildings (over 23 years) and new buildings (under 23 years) we can see that the stats guru’s assertion of a ~\$2 increase in rent per square foot remains true. We therefore cannot know if the \$2 increase is due to the fact that a building is new or green, as these factors are systematically correlated.
+
+```{r , echo= FALSE}
+
+cat('Mean rent for buildings < 23 years: ', mean(data_age$Rent))
+cat('Mean rent for buildings > 23 years: ', mean(data$Rent))
+cat('Premium per sq. ft.: ', mean(data_age$Rent)-mean(data$Rent))
+```
+
+This means that we can't necessarily differentiate the effect of green buildings and the effect of new buildings. The stats guru concluded that green buildings see a premium of $2.6 by being a green building, but you essentially get this premium just by being a new building.
+
+Note: I chose 'new' buildings to be those under 23 years, which is the average age of green buildings. I split the data here so that the effect of green buildings on rent(if any), would be the same on either side of the age split.
+
+
+The second variable I investigated for a confounding affect was class A. Class A buildings are typically the most desired as they are the highest quality. You can see a similar confounding affect.
+
+
+```{r , echo= FALSE}
+
+tab <- table(data_green$class_a)
+prop <- tab[2]/(tab[1]+tab[2])
+tab <- table(data$class_a)
+prop1 <- tab[2]/(tab[1]+tab[2])
+
+data_classA <- data[data['class_a']==1, ]
+data_not_classA <- data[data['class_a']!=1, ]
+```
+
+
+```{r , echo= FALSE}
+
+
+myMatrix <- matrix(0, nrow = 1, ncol = 2)
+myMatrix[1,1] = prop
+myMatrix[1,2] = prop1
+colnames(myMatrix) = c('Green Buildings', 'All Buildings')
+rownames(myMatrix) = c('Proportion of Class A')
+#cols <- c("blue", "red")[(mean(data$age) > mean(data_green$age))+1] 
+cols <- c("blue", "red")
+barplot(myMatrix,ylab = 'Percent', main = 'Proportion of Class A',beside = TRUE, col = cols)
+
+
+```
+
+Roughly 80% of green buildings are of the type class A, whereas only 40% of the overall population are class A buildings. This means that again, we cannot assume that an increase in rent is directly caused by a building being green instead of a building being of class A. In fact, I would guess that being green does not affect the rent nearly as much as other factors (if at all) based on the output of the initial regression analysis coefficients. (Recall that green_rating had a Pvalue of 0.327867)
+
+```{r , echo= FALSE}
+
+cat('Mean Class A rent: ', mean(data_classA$Rent))
+cat('Mean Not-Class A rent: ', mean(data$Rent))
+cat('Premium per sq. ft.: ', mean(data_classA$Rent)-mean(data$Rent))
+
+
+```
+
+
+```{r , echo= FALSE}
+
+
+data_1 <- data[which (data['class_a']==1 | data['green_rating']==1),]
+data_2<- data[which (data['class_a']==1 | data['green_rating']!=1),]
+data_3 <- data[which (data['class_a']!=1 | data['green_rating']==1),]
+data_4<- data[which (data['class_a']!=1 | data['green_rating']!=1),]
+
+#double graph
+
+myMatrix <- matrix(0, nrow = 2, ncol = 2)
+myMatrix[1,1] = mean(data_1$Rent)
+myMatrix[1,2] = mean(data_2$Rent)
+myMatrix[2,1] = mean(data_3$Rent)
+myMatrix[2,2] = mean(data_4$Rent)
+colnames(myMatrix) = c('Green', 'Not-Green')
+rownames(myMatrix) = c('Class A', 'Not-Class A')
+
+barplot(myMatrix,ylab = 'Avg Rent / Sqft', main = 'Green and Class A',beside = TRUE, col = cols, legend.text = rownames(myMatrix))
+
+
+
+```
+
+
+
+My recommendation is to first consider other factors such as age, class a, amenities, cluster, etc. and then determine if tenants in these specific building types are willing to pay a premium for a green building, and if so, how much of a premium. 
+
+
+#Bootstrapping
+
+```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
+library(kableExtra)
+library(ggplot2)
+library(mosaic)
+library(quantmod)
+library(foreach)
+```
+
+
+
+```{r Asset Classes, echo=FALSE, message=FALSE, warning=FALSE}
+# Import assets
+mystocks = c("SPY", "TLT", "LQD", "EEM", "VNQ")
+getSymbols(mystocks)
+
+# Adjust for splits and dividends
+SPYa = adjustOHLC(SPY)
+TLTa = adjustOHLC(TLT)
+LQDa = adjustOHLC(LQD)
+EEMa = adjustOHLC(EEM)
+VNQa = adjustOHLC(VNQ)
+
+# Combine all the returns in a matrix
+all_returns = cbind(	ClCl(SPYa),
+                     ClCl(TLTa),
+                     ClCl(LQDa),
+                     ClCl(EEMa),
+                     ClCl(VNQa))
+all_returns = as.matrix(na.omit(all_returns))
+
+risk = matrix(0,nrow=2,ncol = 5)
+colnames(risk) = mystocks
+rownames(risk) = c('Average Annual Return', 'Annualized Standard Deviation')
+
+#Returns
+for(c in 1:5){
+  risk[1,c] = ((1+mean(all_returns[,c]))^252-1)*100
+}
+
+#Standard Deviations
+for(c in 1:5){
+  risk[2,c] = (sd(all_returns[,c]))*sqrt(252)*100
+}
+
+kable(as.table(risk)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+simulations = matrix(0,nrow=2,ncol=3)
+colnames(simulations) = c('Equal Weights', 'Safe', 'Aggressive')
+rownames(simulations) = c('Value in 4 Weeks', '5% Value at Risk')
+
+
+```
+
+The above table shows the annualized returns and standard deviation in returns of our five assets. Using these metrics as proxies for return and risk, respectively, we can their general characteristics. SPY commonly represents "the market" by indexing the US's 500 largest stocks. Over the last eight and a half years it has returned 10% on average, but had a standard deviation of almost 20% due to sharp rises an falls. TLT and LQD are fixed income securities that offer lower returns, but much more consistent returns. Between them, the corporate bonds (LQD) show lower risk and returns, likely because the security is diversified across companies while TLT is 100% tied to the US government. In contrast, EEM represents emerging market stocks which have high potential gains, but also extremely high volatility. Lastly the real estate ETF (VNQ) returned roughly the same on average as the S&P, but with significantly higher volatility. This does not seem to follow the notion of higher risk is rewarded with higher returns......
+
+The charts below show the simulated ending value of portolios made up of differing combinations of these five assets, starting with equal weights on each. The safer portolio is designed with the goal of reducing variance in returns and value at risk. It is invested 40% in TLT, 40% in LQD, 20% in SPY, and excludes the assets with the highest variance in returns. The aggressive portfolio attempts to meet the goal of increasing expected returns by investing 40% in SPY, 50% in EEM, 10% in VNQ, and excluding the fixed income securities.
+
+#Equally Weighted Portfolio
+
+
+```{r Equal Weights, echo=FALSE}
+# Now simulate many different possible scenarios  
+initial_wealth = 100000
+simequal = foreach(i=1:5000, .combine='rbind') %do% {
+  total_wealth = initial_wealth
+  weights = c(0.2, 0.2, 0.2, 0.2, 0.2)
+  holdings = weights * total_wealth
+  n_days = 20
+  wealthtracker = rep(0, n_days)
+  for(today in 1:n_days) {
+    return.today = resample(all_returns, 1, orig.ids=FALSE)
+    holdings = holdings + holdings*return.today
+    total_wealth = sum(holdings)
+    wealthtracker[today] = total_wealth
+  }
+  wealthtracker
+}
+#Ending wealth
+hist(simequal[,n_days], 30, xlab = 'Portfolio Value After 4 Weeks', main = 'Equally Weighted Portfolio', col='lightblue')
+endingequal = mean(simequal[,n_days])
+simulations[1,1] = endingequal
+# cat('Average wealth after 4 weeks: $', endingequal, sep='')
+
+# Profit/loss
+hist(simequal[,n_days]- initial_wealth, breaks=30, xlab='Gain/Loss in 4 weeks', main = 'Equally Weighted Portfolio - Profit', col='lightblue')
+# Calculate 5% value at risk
+varequal = quantile(simequal[,n_days], 0.05) - initial_wealth
+simulations[2,1] = varequal
+# cat('5% Value at Risk: $', abs(varequal), sep='')
+
+```
+
+
+<br>
+
+#Safe Portfolio
+
+
+```{r Safe, echo=FALSE}
+# Now simulate many different possible scenarios  
+initial_wealth = 100000
+simsafe = foreach(i=1:5000, .combine='rbind') %do% {
+  total_wealth = initial_wealth
+  weights = c(0.2, 0.4, 0.4, 0.0, 0.0)
+  holdings = weights * total_wealth
+  n_days = 20
+  wealthtracker = rep(0, n_days)
+  for(today in 1:n_days) {
+    return.today = resample(all_returns, 1, orig.ids=FALSE)
+    holdings = holdings + holdings*return.today
+    total_wealth = sum(holdings)
+    wealthtracker[today] = total_wealth
+  }
+  wealthtracker
+}
+#Ending wealth
+hist(simsafe[,n_days], 30, xlab = 'Portfolio Value After 4 Weeks', main = 'Safe Portfolio', col='lightgreen')
+endingsafe = mean(simsafe[,n_days])
+simulations[1,2] = endingsafe
+#cat('Average wealth after 4 weeks: $', endingsafe, sep='')
+
+# Profit/loss
+hist(simsafe[,n_days]- initial_wealth, breaks=30, xlab='Gain/Loss in 4 weeks', main = 'Safe Portfolio - Profit', col='lightgreen')
+# Calculate 5% value at risk
+varsafe =  quantile(simsafe[,n_days], 0.05) - initial_wealth
+simulations[2,2] = varsafe
+#cat('5% Value at Risk: $', abs(varsafe), sep='')
+
+```
+
+
+
+
+
+<br>
+
+#Aggressive Portfolio
+
+
+```{r Risky, echo=FALSE}
+# Now simulate many different possible scenarios  
+initial_wealth = 100000
+simrisky = foreach(i=1:5000, .combine='rbind') %do% {
+  total_wealth = initial_wealth
+  weights = c(0.4, 0.0, 0.0, 0.5, 0.1)
+  holdings = weights * total_wealth
+  n_days = 20
+  wealthtracker = rep(0, n_days)
+  for(today in 1:n_days) {
+    return.today = resample(all_returns, 1, orig.ids=FALSE)
+    holdings = holdings + holdings*return.today
+    total_wealth = sum(holdings)
+    wealthtracker[today] = total_wealth
+  }
+  wealthtracker
+}
+#Ending wealth
+hist(simrisky[,n_days], 25, xlab = 'Portfolio Value After 4 Weeks', main = 'Aggressive Portfolio',  col=rgb(1,0,0,1/2))
+endingrisky = mean(simrisky[,n_days])
+simulations[1,3] = endingrisky
+# cat('Average wealth after 4 weeks: $', endingrisky, sep='')
+
+# Profit/loss
+hist(simrisky[,n_days]- initial_wealth, breaks=30, xlab='Gain/Loss in 4 weeks', main = 'Aggressive Portfolio - Profit', col=rgb(1,0,0,1/2))
+# Calculate 5% value at risk
+varrisky = quantile(simrisky[,n_days], 0.05) - initial_wealth
+simulations[2,3] = varrisky
+# cat('5% Value at Risk: $', abs(varrisky), sep='')
+```
+
+
+```{r Comparison, echo=FALSE}
+plot(density(simsafe[,n_days]), xlim = c(70000,200000), col = 'green', main='Portfolio Values', xlab='$ value after 4 weeks', ylab='Frequency', lwd=3)
+lines(density(simequal[,n_days]), col = 'blue', lwd=3)
+lines(density(simrisky[,n_days]), col = 'red', lwd=3)
+legend('right',legend=c('Safe','Equal','Aggressive'),fill=c('green','blue','red'))
+
+kable(as.table(simulations)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+##Analysis
+
+The table above shows the simulated expected return and 5% Value at Risk for the three portfolios. Value at Risk (VaR) represents the dollar value loss associated with the worst 5% possible outcomes. As expected, the safer distribution of assets primarily into fixed income securities reduced the VaR of the portfolio by nearly 50% compared to the equally weighted portfolio. However, the expected profit was also reduce by almost 50%. In contrast, the aggressive portfolio that excluded fixed income securities nearly doubled the VaR and simulated profit. The density plot above even shows the possibility for the agrressive portfolio to double in value over just the four-week timespan.
+
+As an investor, your choice should be made depending on your risk tolerance and time horizon. A longer time frame can make use of the aggressive portfolio to achieve heigher expected returns and weather out the large variations. A shorter time frame can utilize the safer portfolio to secure a low VaR while receiving some gains.
+
+<br>
+
+#Market Segmentation
+
+```{r Read Data, echo=FALSE, message=FALSE, warning=FALSE}
+set.seed(343)
+sm = read.csv('C:/Users/Abraham/Desktop/UT/MSBA/Intro Predictive Modeling/social_marketing.csv', header=TRUE)
+#Drop randomized ID column
+sm <- sm[-c(1)]
+
+# Scale the data
+sm <- na.omit(sm)
+sm_scaled = scale(sm, center=TRUE, scale=TRUE)
+```
+
+#Find K
+
+```{r Find K, echo=FALSE}
+#kmeans 
+#Try different K clusters
+CHIndex=sapply(2:30,function(k){
+  model = kmeans(sm_scaled,k, iter.max=15)
+  (model$betweenss/(k-1))/(model$totss/(36-k))  
+  })
+plot(2:30,CHIndex, type='b', pch=20, xlab='Number of Clusters')
+
+# Use k-means + + to get 6 clusters
+cluster_all <- kmeanspp(sm_scaled, k=6)
+```
+
+The above graph shows the result of running a Kmeans model on the entire scaled dataset and calculating the CH Index value for each value of k (number of clusters). We chose a k = 6 from the plot where the points formed a small elbow, and then ran the KMeans cluster analysis. After running the cluster analysis, we plotted pairwise plots of the top five variables (sorted by importance to cluster) in each cluster (representing our six market segments), which gave the following graphs and interpretations per group. 
+
+<br>
+
+###Cluster 1 - The Noise/Bots
+
+*11.27% of followers*
+
+This cluster is composed mainly of those tags Twitter tries to weed out, including spam, random chatter, and inappropriate adult content. It can be mostly randomly generated by bots, so it's very irrelevant for Nutrient H2O's marketing team to focus on these characteristics.
+
+```{r Cluster1, echo=FALSE}
+# Plot with labels
+check1 = sm_scaled[,names(sort(cluster_all$centers[1,])[32:36])]
+pairs(check1, pch=20, col=rainbow(6)[cluster_all$cluster])
+```
+
+
+###Cluster 2 - The Instagram Influencer
+
+*5.44% of followers*
+
+Those in this segment are most likely social-media savvy and are on top of trends relating to music, photo sharing, beauty, fashion, and cooking. They share a lot of photos relating to their lifestyle and these categories suggest that the content they share could be curated according to these categories. Nutrient H2O can appeal to this segment by sharing/retweeting photos and possibly relate their products to current trends relating to fashion, beauty, cooking, etc.  
+
+```{r Cluster2, echo=FALSE}
+# Plot with labels
+check2 = sm_scaled[,names(sort(cluster_all$centers[2,])[32:36])]
+pairs(check2, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+###Cluster 3 - The Young Professional
+
+*7.28% of followers*
+
+This cluster was identified by valuing subjects such as automotives, computers, travel, the news, and politics very highly. A young professional would travel a lot for work, be highly technology savvy, and very engaged in news and politics. They love sports cars, and they hate Trump. We'd suggest for Nutrient H2O to focus on appealing to their politically active tendencies and being up-to-date on news.
+
+
+```{r Cluster3, echo=FALSE}
+# Plot with labels
+check3 = sm_scaled[,names(sort(cluster_all$centers[3,])[32:36])]
+pairs(check3, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+###Cluster 4 - The Whole Foodies
+
+*8.65% of followers*
+
+This cluster of healthy eating fans are really into bettering their lifestyles in various ways. They're the kind of people that meal prep using kale, spend time outdoors doing goat yoga, and indulge in SoulCycle at least once a week. Most likely, they own a metal straw #savetheturtles. Nutrient H2O can appeal to this segment by highlighting the health benefits in their products and supporting eco-friendly, sustainable practices.
+
+```{r Cluster4, echo=FALSE}
+# Plot with labels
+check4 = sm_scaled[,names(sort(cluster_all$centers[4,])[32:36])]
+pairs(check4, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+###Cluster 5 - The College Student
+
+*9.96% of followers*
+
+Your average college student is highly engaged in the bubble of their school activities and social life. Often, they escape from the pressure of deadlines by immersing themselves into activities like Netflix, gaming online, and ultimate frisbee or flag football. Nutrient H2O can win this segment over with NFL-themed deals, or by appealing to school pride. 
+
+```{r Cluster5, echo=FALSE}
+# Plot with labels
+check5 = sm_scaled[,names(sort(cluster_all$centers[5,])[32:36])]
+pairs(check5, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+###Cluster 6 - The Soccer Moms
+
+*57.66% of followers*
+
+This cluster represents the the typical soccer mom, tweeting about things relating to school, food, sports, parenting, and religion. They're probably the super involved parents, volunteering at their kids' schools, signing their kids up for various sports and afterschool activities, and goes to church every Sunday. They're not regular moms, they're "cool moms." Nutrient H2O can capture this segment by relating their marketing and advertising to subjects like school, sports, or anything relating to their kids. This is the largest segment by far and holds a lot of spending power, so Nutrient H2O should definitely focus significant energy and marketing dollars on this group.    
+
+```{r Cluster6, echo=FALSE}
+# Plot with labels 
+check6 = sm_scaled[,names(sort(cluster_all$centers[6,])[32:36])]
+pairs(check6, pch=20, col=rainbow(6)[cluster_all$cluster])
+
+```
+
+```{r Cluster Counts, echo=FALSE}
+counts = matrix(0,nrow=1,ncol=6)
+
+for(c in 1:6){
+  counts[1,c] = length(cluster_all$cluster[cluster_all$cluster==c])/7882*100
+}
+
+#counts
+```
+
