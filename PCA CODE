@@ -1,0 +1,18 @@
+
+##### PCA CODE
+
+
+
+pc1 = prcomp(sm_scaled, rank=1)
+summary(pc1)
+pc1_scores = predict(pc1)  # same as fxpca$x
+
+plot(pc1)
+
+# Question 1: where do the original observations end up in PC space?
+plot(pc1_scores[,1:2], pch=21, bg=terrain.colors(119)[119:1], main="Currency PC scores")
+legend("bottomleft", fill=terrain.colors(3),
+       legend=c("2010","2005","2001"), cex=0.75)
+
+# Question 2: how are the loadings related to the original variables?
+barplot(pc1$rotation[,1], las=2)
