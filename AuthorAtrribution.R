@@ -163,6 +163,8 @@ for (i in 1:2550){
   }
 }
 
+pred[,51] #been running this for debugging the NA error
+
 pred[1:10, 1:10] #predictions
 
 for (i in 2550){
