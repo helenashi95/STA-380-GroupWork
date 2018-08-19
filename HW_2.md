@@ -113,22 +113,11 @@ purchased product, the lift on all of these rules is above 2, meaning
 that the conditional probability of a person getting whole milk is
 double that of the probability before they have any other items.
 
-    ##     lhs                          rhs          support    confidence
-    ## [1] {tropical fruit,yogurt}   => {whole milk} 0.01514997 0.5173611 
-    ## [2] {other vegetables,yogurt} => {whole milk} 0.02226741 0.5128806 
-    ##     lift     count
-    ## [1] 2.024770 149  
-    ## [2] 2.007235 219
-
 <table class="table table-striped table-hover" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
-</th>
-<th style="text-align:left;">
 lhs
-</th>
-<th style="text-align:left;">
 </th>
 <th style="text-align:left;">
 rhs
@@ -150,13 +139,7 @@ count
 <tbody>
 <tr>
 <td style="text-align:left;">
-\[1\]
-</td>
-<td style="text-align:left;">
 {tropical fruit,yogurt}
-</td>
-<td style="text-align:left;">
-=&gt;
 </td>
 <td style="text-align:left;">
 {whole milk}
@@ -176,13 +159,7 @@ count
 </tr>
 <tr>
 <td style="text-align:left;">
-\[2\]
-</td>
-<td style="text-align:left;">
 {other vegetables,yogurt}
-</td>
-<td style="text-align:left;">
-=&gt;
 </td>
 <td style="text-align:left;">
 {whole milk}
@@ -202,19 +179,89 @@ count
 </tr>
 </tbody>
 </table>
-    ##     lhs                     rhs              support confidence     lift count
-    ## [1] {butter,                                                                  
-    ##      whipped/sour cream} => {whole milk} 0.006710727      0.660 2.583008    66
-    ## [2] {other vegetables,                                                        
-    ##      pip fruit,                                                               
-    ##      root vegetables}    => {whole milk} 0.005490595      0.675 2.641713    54
-    ## [3] {root vegetables,                                                         
-    ##      tropical fruit,                                                          
-    ##      yogurt}             => {whole milk} 0.005693950      0.700 2.739554    56
-
 <table class="table table-striped table-hover" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+lhs
+</th>
+<th style="text-align:left;">
+rhs
+</th>
+<th style="text-align:right;">
+support
+</th>
+<th style="text-align:right;">
+confidence
+</th>
+<th style="text-align:right;">
+lift
+</th>
+<th style="text-align:right;">
+count
+</th>
+</tr>
+</thead>
 <tbody>
 <tr>
+<td style="text-align:left;">
+{root vegetables,tropical fruit,yogurt}
+</td>
+<td style="text-align:left;">
+{whole milk}
+</td>
+<td style="text-align:right;">
+0.0056940
+</td>
+<td style="text-align:right;">
+0.700
+</td>
+<td style="text-align:right;">
+2.739554
+</td>
+<td style="text-align:right;">
+56
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+{other vegetables,pip fruit,root vegetables}
+</td>
+<td style="text-align:left;">
+{whole milk}
+</td>
+<td style="text-align:right;">
+0.0054906
+</td>
+<td style="text-align:right;">
+0.675
+</td>
+<td style="text-align:right;">
+2.641713
+</td>
+<td style="text-align:right;">
+54
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+{butter,whipped/sour cream}
+</td>
+<td style="text-align:left;">
+{whole milk}
+</td>
+<td style="text-align:right;">
+0.0067107
+</td>
+<td style="text-align:right;">
+0.660
+</td>
+<td style="text-align:right;">
+2.583008
+</td>
+<td style="text-align:right;">
+66
+</td>
 </tr>
 </tbody>
 </table>
