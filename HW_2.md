@@ -102,29 +102,9 @@ predicted items. Also, the highest lift rules all have relatively low
 support as expected because the most informative rules should be less
 common.
 
-    ## Apriori
-    ## 
-    ## Parameter specification:
-    ##  confidence minval smax arem  aval originalSupport maxtime support minlen
-    ##         0.5    0.1    1 none FALSE            TRUE       5   0.005      1
-    ##  maxlen target   ext
-    ##       5  rules FALSE
-    ## 
-    ## Algorithmic control:
-    ##  filter tree heap memopt load sort verbose
-    ##     0.1 TRUE TRUE  FALSE TRUE    2    TRUE
-    ## 
-    ## Absolute minimum support count: 49 
-    ## 
-    ## set item appearances ...[0 item(s)] done [0.00s].
-    ## set transactions ...[169 item(s), 9835 transaction(s)] done [0.01s].
-    ## sorting and recoding items ... [120 item(s)] done [0.00s].
-    ## creating transaction tree ... done [0.01s].
-    ## checking subsets of size 1 2 3 4 done [0.01s].
-    ## writing ... [120 rule(s)] done [0.00s].
-    ## creating S4 object  ... done [0.00s].
+    ## To reduce overplotting, jitter is added! Use jitter = 0 to prevent jitter.
 
-![](HW_2_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+![](HW_2_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
 The rules shown below have the highest support and confidence,
 respectively, and they all contain Whole Milk on the right hand side of
@@ -140,13 +120,104 @@ double that of the probability before they have any other items.
     ## [1] 2.024770 149  
     ## [2] 2.007235 219
 
-    ##     lhs                          rhs          support    confidence
-    ## [1] {tropical fruit,yogurt}   => {whole milk} 0.01514997 0.5173611 
-    ## [2] {other vegetables,yogurt} => {whole milk} 0.02226741 0.5128806 
-    ##     lift     count
-    ## [1] 2.024770 149  
-    ## [2] 2.007235 219
+<table class="table table-striped table-hover" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+lhs
+</th>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+rhs
+</th>
+<th style="text-align:right;">
+support
+</th>
+<th style="text-align:right;">
+confidence
+</th>
+<th style="text-align:right;">
+lift
+</th>
+<th style="text-align:right;">
+count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+\[1\]
+</td>
+<td style="text-align:left;">
+{tropical fruit,yogurt}
+</td>
+<td style="text-align:left;">
+=&gt;
+</td>
+<td style="text-align:left;">
+{whole milk}
+</td>
+<td style="text-align:right;">
+0.0151500
+</td>
+<td style="text-align:right;">
+0.5173611
+</td>
+<td style="text-align:right;">
+2.024770
+</td>
+<td style="text-align:right;">
+149
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+\[2\]
+</td>
+<td style="text-align:left;">
+{other vegetables,yogurt}
+</td>
+<td style="text-align:left;">
+=&gt;
+</td>
+<td style="text-align:left;">
+{whole milk}
+</td>
+<td style="text-align:right;">
+0.0222674
+</td>
+<td style="text-align:right;">
+0.5128806
+</td>
+<td style="text-align:right;">
+2.007235
+</td>
+<td style="text-align:right;">
+219
+</td>
+</tr>
+</tbody>
+</table>
+    ##     lhs                     rhs              support confidence     lift count
+    ## [1] {butter,                                                                  
+    ##      whipped/sour cream} => {whole milk} 0.006710727      0.660 2.583008    66
+    ## [2] {other vegetables,                                                        
+    ##      pip fruit,                                                               
+    ##      root vegetables}    => {whole milk} 0.005490595      0.675 2.641713    54
+    ## [3] {root vegetables,                                                         
+    ##      tropical fruit,                                                          
+    ##      yogurt}             => {whole milk} 0.005693950      0.700 2.739554    56
 
+<table class="table table-striped table-hover" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+</tr>
+</tbody>
+</table>
 A network graph of our 120 association rules in Gephi is shown below.
 Whole milk, root vegetables, other vegetables, and yogurt appear as the
 most frequently predicted items from our rules. However, they are not
