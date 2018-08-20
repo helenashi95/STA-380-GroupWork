@@ -127,7 +127,9 @@ Accuracy
 </tr>
 </tbody>
 </table>
-<br> \#\#\#Random Forest
+<br>
+
+### Random Forest
 
 Random Forset is a generally strong model for classification, and we
 wanted to use this as a baseline to compare to Boosting. With 250 trees,
@@ -557,7 +559,10 @@ WilliamKazer
 </tr>
 </tbody>
 </table>
-<br> \#Association Rules
+<br>
+
+Association Rules
+=================
 
 The plot below shows the overall prior frequencies of items in our
 dataset of transactions. Whole milk is the most frequenly purchased by a
