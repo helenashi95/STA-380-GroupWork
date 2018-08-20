@@ -100,95 +100,6 @@ classifiers into stronger ones, we thought this approach would best for
 connecting sets of words to authors. Accuracy on the training documents
 was high at 85.6%, but test accuracy dropped to 39%.
 
-    ## Loading required package: survival
-
-    ## Loading required package: lattice
-
-    ## Loading required package: splines
-
-    ## Loading required package: parallel
-
-    ## Loaded gbm 2.1.3
-
-![](HW_2_files/figure-markdown_strict/Boosting-1.png)
-
-    ##       var    rel.inf
-    ## PC1   PC1 8.59451088
-    ## PC5   PC5 5.07935261
-    ## PC9   PC9 4.89078476
-    ## PC7   PC7 4.81613443
-    ## PC19 PC19 4.76439589
-    ## PC10 PC10 4.38964738
-    ## PC2   PC2 3.88766460
-    ## PC12 PC12 3.82444096
-    ## PC4   PC4 2.86295776
-    ## PC14 PC14 2.84245660
-    ## PC22 PC22 2.72306175
-    ## PC18 PC18 2.71157935
-    ## PC8   PC8 2.44609483
-    ## PC58 PC58 2.39838478
-    ## PC25 PC25 2.29132222
-    ## PC11 PC11 2.07858817
-    ## PC36 PC36 1.82885430
-    ## PC23 PC23 1.79349912
-    ## PC50 PC50 1.71704164
-    ## PC17 PC17 1.67025190
-    ## PC20 PC20 1.58252977
-    ## PC21 PC21 1.40010676
-    ## PC47 PC47 1.29761696
-    ## PC6   PC6 1.27283100
-    ## PC37 PC37 1.21279863
-    ## PC53 PC53 1.05091212
-    ## PC75 PC75 1.04079291
-    ## PC67 PC67 0.93525245
-    ## PC40 PC40 0.92340978
-    ## PC42 PC42 0.88750313
-    ## PC30 PC30 0.88083018
-    ## PC29 PC29 0.86619179
-    ## PC43 PC43 0.85619213
-    ## PC61 PC61 0.82372210
-    ## PC34 PC34 0.82285624
-    ## PC26 PC26 0.81891117
-    ## PC70 PC70 0.81370182
-    ## PC68 PC68 0.76822323
-    ## PC63 PC63 0.75804346
-    ## PC62 PC62 0.72059330
-    ## PC24 PC24 0.70858864
-    ## PC31 PC31 0.69092416
-    ## PC44 PC44 0.68743758
-    ## PC32 PC32 0.67499076
-    ## PC54 PC54 0.65644094
-    ## PC74 PC74 0.65568182
-    ## PC33 PC33 0.58595644
-    ## PC57 PC57 0.56440202
-    ## PC16 PC16 0.51449153
-    ## PC56 PC56 0.50298574
-    ## PC59 PC59 0.47476503
-    ## PC28 PC28 0.44210217
-    ## PC52 PC52 0.42443363
-    ## PC46 PC46 0.40884349
-    ## PC69 PC69 0.40180446
-    ## PC3   PC3 0.39066968
-    ## PC39 PC39 0.36173721
-    ## PC64 PC64 0.35350418
-    ## PC55 PC55 0.34438097
-    ## PC66 PC66 0.32618041
-    ## PC45 PC45 0.32175763
-    ## PC13 PC13 0.29296984
-    ## PC65 PC65 0.29151874
-    ## PC60 PC60 0.27109921
-    ## PC73 PC73 0.24659130
-    ## PC38 PC38 0.21265157
-    ## PC71 PC71 0.20093019
-    ## PC49 PC49 0.17721927
-    ## PC15 PC15 0.13763982
-    ## PC51 PC51 0.08964164
-    ## PC72 PC72 0.08956965
-    ## PC48 PC48 0.07712504
-    ## PC41 PC41 0.07692240
-    ## PC27 PC27 0.00000000
-    ## PC35 PC35 0.00000000
-
 <table>
 <thead>
 <tr>
@@ -222,21 +133,11 @@ Random Forset is a generally strong model for classification, and we
 wanted to use this as a baseline to compare to Boosting. With 250 trees,
 the test accuracy equalled 50%, which is substantially higher than that
 of the boosting model. However there is large variability in the accury
-of predicting individual authors. For example, the model accuracy was
-over 90% when the author of a document was Aaron Pressman, but less than
-30% for Scott Hillis. This is because 30 out of 50 times, the model
-predicted Scott's articles to be written by Samuel Perry.
-
-    ## randomForest 4.6-14
-
-    ## Type rfNews() to see new features/changes/bug fixes.
-
-    ## 
-    ## Attaching package: 'randomForest'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     margin
+of predicting individual authors, which can be seen in the table of
+error rates below. For example, the model accuracy was over 90% when the
+author of a document was Aaron Pressman, but less than 30% for Scott
+Hillis. This is because 30 out of 50 times, the model predicted Scott's
+articles to be written by Samuel Perry.
 
 <table>
 <tbody>
