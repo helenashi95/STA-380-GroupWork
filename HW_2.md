@@ -127,7 +127,7 @@ Accuracy
 </tr>
 </tbody>
 </table>
-### Random Forest
+<br> \#\#\#Random Forest
 
 Random Forset is a generally strong model for classification, and we
 wanted to use this as a baseline to compare to Boosting. With 250 trees,
@@ -137,7 +137,9 @@ of predicting individual authors, which can be seen in the table of
 error rates below. For example, the model accuracy was over 90% when the
 author of a document was Aaron Pressman, but less than 30% for Scott
 Hillis. This is because 30 out of 50 times, the model predicted Scott's
-articles to be written by Samuel Perry.
+articles to be written by Samuel Perry. This is one example of two
+others having similar word frequencies, making it hard to distinguish
+between their works using just a bag of words.
 
 <table>
 <tbody>
@@ -555,8 +557,7 @@ WilliamKazer
 </tr>
 </tbody>
 </table>
-Association Rules
-=================
+<br> \#Association Rules
 
 The plot below shows the overall prior frequencies of items in our
 dataset of transactions. Whole milk is the most frequenly purchased by a
