@@ -74,6 +74,586 @@ arriving in Austin is virtually identical.
 
 ![](HW_2_files/figure-markdown_strict/Maps-1.png)![](HW_2_files/figure-markdown_strict/Maps-2.png)
 
+Author Attribution
+==================
+
+### PCA
+
+After pre-proccessing all authors in the train and test set, we ran a
+principal component analysis and the variance explained is shown in the
+graph below. The main classifications shown in the first principal
+components seem to primarily distinguish between articles about China
+and articles about global economics and finance. For example, the first
+PC has strong positive coefficents for the words China, Hong Kong,
+Chinese, and Communist, and has negative coefficients for words such as
+computer, software, quarter, bank, funds, etc. The next two components
+are similar, but there is variation in the focus on either economics or
+politics.
+
+![](HW_2_files/figure-markdown_strict/PCA-1.png)
+
+### Boosting
+
+Individual words are weak classifiers becauese they are relatively
+infrequent across so many documents. Since boosting combines weak
+classifiers into stronger ones, we thought this approach would best for
+connecting sets of words to authors. Accuracy on the training documents
+was high at 85.6%, but test accuracy dropped to 39%.
+
+    ## Loading required package: survival
+
+    ## Loading required package: lattice
+
+    ## Loading required package: splines
+
+    ## Loading required package: parallel
+
+    ## Loaded gbm 2.1.3
+
+![](HW_2_files/figure-markdown_strict/Boosting-1.png)
+
+    ##       var    rel.inf
+    ## PC1   PC1 8.59451088
+    ## PC5   PC5 5.07935261
+    ## PC9   PC9 4.89078476
+    ## PC7   PC7 4.81613443
+    ## PC19 PC19 4.76439589
+    ## PC10 PC10 4.38964738
+    ## PC2   PC2 3.88766460
+    ## PC12 PC12 3.82444096
+    ## PC4   PC4 2.86295776
+    ## PC14 PC14 2.84245660
+    ## PC22 PC22 2.72306175
+    ## PC18 PC18 2.71157935
+    ## PC8   PC8 2.44609483
+    ## PC58 PC58 2.39838478
+    ## PC25 PC25 2.29132222
+    ## PC11 PC11 2.07858817
+    ## PC36 PC36 1.82885430
+    ## PC23 PC23 1.79349912
+    ## PC50 PC50 1.71704164
+    ## PC17 PC17 1.67025190
+    ## PC20 PC20 1.58252977
+    ## PC21 PC21 1.40010676
+    ## PC47 PC47 1.29761696
+    ## PC6   PC6 1.27283100
+    ## PC37 PC37 1.21279863
+    ## PC53 PC53 1.05091212
+    ## PC75 PC75 1.04079291
+    ## PC67 PC67 0.93525245
+    ## PC40 PC40 0.92340978
+    ## PC42 PC42 0.88750313
+    ## PC30 PC30 0.88083018
+    ## PC29 PC29 0.86619179
+    ## PC43 PC43 0.85619213
+    ## PC61 PC61 0.82372210
+    ## PC34 PC34 0.82285624
+    ## PC26 PC26 0.81891117
+    ## PC70 PC70 0.81370182
+    ## PC68 PC68 0.76822323
+    ## PC63 PC63 0.75804346
+    ## PC62 PC62 0.72059330
+    ## PC24 PC24 0.70858864
+    ## PC31 PC31 0.69092416
+    ## PC44 PC44 0.68743758
+    ## PC32 PC32 0.67499076
+    ## PC54 PC54 0.65644094
+    ## PC74 PC74 0.65568182
+    ## PC33 PC33 0.58595644
+    ## PC57 PC57 0.56440202
+    ## PC16 PC16 0.51449153
+    ## PC56 PC56 0.50298574
+    ## PC59 PC59 0.47476503
+    ## PC28 PC28 0.44210217
+    ## PC52 PC52 0.42443363
+    ## PC46 PC46 0.40884349
+    ## PC69 PC69 0.40180446
+    ## PC3   PC3 0.39066968
+    ## PC39 PC39 0.36173721
+    ## PC64 PC64 0.35350418
+    ## PC55 PC55 0.34438097
+    ## PC66 PC66 0.32618041
+    ## PC45 PC45 0.32175763
+    ## PC13 PC13 0.29296984
+    ## PC65 PC65 0.29151874
+    ## PC60 PC60 0.27109921
+    ## PC73 PC73 0.24659130
+    ## PC38 PC38 0.21265157
+    ## PC71 PC71 0.20093019
+    ## PC49 PC49 0.17721927
+    ## PC15 PC15 0.13763982
+    ## PC51 PC51 0.08964164
+    ## PC72 PC72 0.08956965
+    ## PC48 PC48 0.07712504
+    ## PC41 PC41 0.07692240
+    ## PC27 PC27 0.00000000
+    ## PC35 PC35 0.00000000
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Training
+</th>
+<th style="text-align:right;">
+Test
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Accuracy
+</td>
+<td style="text-align:right;">
+0.8524
+</td>
+<td style="text-align:right;">
+0.3956
+</td>
+</tr>
+</tbody>
+</table>
+### Random Forest
+
+Random Forset is a generally strong model for classification, and we
+wanted to use this as a baseline to compare to Boosting. With 250 trees,
+the test accuracy equalled 50%, which is substantially higher than that
+of the boosting model. However there is large variability in the accury
+of predicting individual authors. For example, the model accuracy was
+over 90% when the author of a document was Aaron Pressman, but less than
+30% for Scott Hillis. This is because 30 out of 50 times, the model
+predicted Scott's articles to be written by Samuel Perry.
+
+    ## randomForest 4.6-14
+
+    ## Type rfNews() to see new features/changes/bug fixes.
+
+    ## 
+    ## Attaching package: 'randomForest'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     margin
+
+<table>
+<tbody>
+<tr>
+<td style="text-align:left;">
+RF Test Accuracy
+</td>
+<td style="text-align:right;">
+0.4936
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<tbody>
+<tr>
+<td style="text-align:left;">
+AaronPressman
+</td>
+<td style="text-align:right;">
+0.08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AlanCrosby
+</td>
+<td style="text-align:right;">
+0.16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AlexanderSmith
+</td>
+<td style="text-align:right;">
+0.36
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BenjaminKangLim
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BernardHickey
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BradDorfman
+</td>
+<td style="text-align:right;">
+0.44
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DarrenSchuettler
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DavidLawder
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EdnaFernandes
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EricAuchard
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FumikoFujisaki
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GrahamEarnshaw
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HeatherScoffield
+</td>
+<td style="text-align:right;">
+0.26
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JaneMacartney
+</td>
+<td style="text-align:right;">
+0.56
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JanLopatka
+</td>
+<td style="text-align:right;">
+0.26
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JimGilchrist
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JoeOrtiz
+</td>
+<td style="text-align:right;">
+0.28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JohnMastrini
+</td>
+<td style="text-align:right;">
+0.24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JonathanBirt
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JoWinterbottom
+</td>
+<td style="text-align:right;">
+0.20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KarlPenhaul
+</td>
+<td style="text-align:right;">
+0.24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KeithWeir
+</td>
+<td style="text-align:right;">
+0.24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KevinDrawbaugh
+</td>
+<td style="text-align:right;">
+0.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KevinMorrison
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KirstinRidley
+</td>
+<td style="text-align:right;">
+0.58
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+KouroshKarimkhany
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LydiaZajc
+</td>
+<td style="text-align:right;">
+0.10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LynneO'Donnell
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LynnleyBrowning
+</td>
+<td style="text-align:right;">
+0.08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MarcelMichelson
+</td>
+<td style="text-align:right;">
+0.10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MarkBendeich
+</td>
+<td style="text-align:right;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MartinWolk
+</td>
+<td style="text-align:right;">
+0.28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MatthewBunce
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MichaelConnor
+</td>
+<td style="text-align:right;">
+0.36
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MureDickie
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NickLouth
+</td>
+<td style="text-align:right;">
+0.22
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PatriciaCommins
+</td>
+<td style="text-align:right;">
+0.30
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PeterHumphrey
+</td>
+<td style="text-align:right;">
+0.20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PierreTran
+</td>
+<td style="text-align:right;">
+0.20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RobinSidel
+</td>
+<td style="text-align:right;">
+0.16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RogerFillion
+</td>
+<td style="text-align:right;">
+0.14
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SamuelPerry
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SarahDavison
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ScottHillis
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SimonCowell
+</td>
+<td style="text-align:right;">
+0.28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TanEeLyn
+</td>
+<td style="text-align:right;">
+0.62
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TheresePoletti
+</td>
+<td style="text-align:right;">
+0.50
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TimFarrand
+</td>
+<td style="text-align:right;">
+0.24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ToddNissen
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WilliamKazer
+</td>
+<td style="text-align:right;">
+0.64
+</td>
+</tr>
+</tbody>
+</table>
 Association Rules
 =================
 
@@ -84,7 +664,7 @@ on. Before looking for associations, we know that many of these items
 will have to be frequently purchased together, so we would want a
 significant confidence in any rules we find in predicting these items.
 
-![](HW_2_files/figure-markdown_strict/unnamed-chunk-2-1.png)
+![](HW_2_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
 After trying different combinations, we decided on a support metric of
 0.005 and confidence of 0.5 when creating our association rules. We also
@@ -104,7 +684,7 @@ common.
 
     ## To reduce overplotting, jitter is added! Use jitter = 0 to prevent jitter.
 
-![](HW_2_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](HW_2_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
 The rules shown below have the highest support and confidence,
 respectively, and they all contain Whole Milk on the right hand side of
@@ -265,14 +845,15 @@ count
 </tr>
 </tbody>
 </table>
-A network graph of our 120 association rules in Gephi is shown below.
-Whole milk, root vegetables, other vegetables, and yogurt appear as the
-most frequently predicted items from our rules. However, they are not
-all necessarily the most purchased products overall. Rolls and Soda do
-not appear significant in associations, even though they are relatively
-common in item baskets. Whole milk is again the most predicted item by
-far, and a grocery store can leverage this since it is already the most
-commonly purchased item by promoting deals with known associated
-products such as root vegetables and yogurt (seen above).
+A network graph of our 120 association rules using a ForceAtlas 2 layout
+in Gephi is shown below. Whole milk, root vegetables, other vegetables,
+and yogurt appear as the most frequently predicted items from our rules.
+However, they are not all necessarily the most purchased products
+overall. Rolls and Soda do not appear significant in associations, even
+though they are relatively common in item baskets. Whole milk is again
+the most predicted item by far, and a grocery store can leverage this
+since it is already the most commonly purchased item by promoting deals
+with known associated products such as root vegetables and yogurt (seen
+above).
 
 ![](HW_2_files/figure-markdown_strict/GroceryRules.png)
